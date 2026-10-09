@@ -1,0 +1,13 @@
+**/node_modules/
+.env
+.env.*
+!.env.example
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/candidates.json
+frontend/dist/
+dist/
+build/
+*.log
+.DS_Store
+.vscode/
