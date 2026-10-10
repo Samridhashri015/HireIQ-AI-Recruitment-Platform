@@ -1,17 +1,23 @@
-# HireIQ — AI-Powered Recruitment Intelligence Platform
+# HireIQ — AI-Powered Recruitment Screening Platform
 
-HireIQ is a web-based recruitment platform that helps recruiters evaluate resumes against job descriptions, identify relevant skills, calculate candidate match scores, and organize candidates in a screening pipeline.
+## 1. Project Overview
 
-## Features
+HireIQ is a web-based recruitment screening platform that analyzes PDF resumes against a job description. It identifies matching and missing skills, estimates relevant experience using text patterns, calculates a match score, and provides a preliminary candidate recommendation.
 
-* **Resume screening:** Upload PDF resumes for analysis.
-* **Skill matching:** Identify matched and missing skills based on a job description.
-* **Candidate scoring:** Calculate a match score using skills and experience.
-* **Recruitment recommendations:** Generate a screening recommendation from the analysis.
-* **Candidate pipeline:** View saved candidate analyses and remove candidates when needed.
-* **Dashboard:** Review screening results through a centralized interface.
+## 2. Problem Statement
 
-## Tech Stack
+Manually reviewing large numbers of resumes can be time-consuming. HireIQ demonstrates how automated text extraction and rule-based matching can help recruiters organize and review applications more efficiently.
+
+## 3. Objectives
+
+* Extract readable text from PDF resumes.
+* Identify skills relevant to a job description.
+* Highlight matched and missing skills.
+* Calculate a preliminary candidate match score.
+* Save and rank analyzed candidate records.
+* Allow users to review and delete saved candidates.
+
+## 4. Technology Stack
 
 **Frontend**
 
@@ -23,108 +29,112 @@ HireIQ is a web-based recruitment platform that helps recruiters evaluate resume
 **Backend**
 
 * Node.js
-* Express.js
+* Express
 * Multer
 * PDF.js
 
-**Data Storage**
+**Storage**
 
-* Local JSON file for saved candidate analyses
+* Local JSON file (`backend/candidates.json`)
 
-## Project Structure
+## 5. Key Features
+
+* PDF resume upload with a 10 MB size limit.
+* Resume text extraction using PDF.js.
+* Rule-based skill matching using a predefined skills dictionary.
+* Experience estimation using regular-expression patterns.
+* Weighted candidate match scoring.
+* Candidate recommendations based on score ranges.
+* Persistent local candidate records.
+* Candidate listing and deletion.
+
+## 6. Scoring Method
+
+When the job description contains identifiable required skills, the system calculates:
+
+**Skill score:** Percentage of identified required skills found in the resume.
+
+**Experience score:** Estimated candidate experience divided by required experience, capped at 100%.
+
+**Final score:**
+
+Final score = (Skill score × 0.80) + (Experience score × 0.20)
+
+If no required skills are identified, the implementation uses the experience score as the final score.
+
+The system uses these recommendation thresholds:
+
+* 85–100: Strong candidate — recommend interview
+* 70–84: Good candidate — review recommended
+* 55–69: Potential candidate — further review required
+* Below 55: Low match — consider other candidates
+
+## 7. Project Structure
 
 ```text
 recruitment-intelligence-platform/
+├── frontend/
+│   └── src/
 ├── backend/
 │   ├── server.js
-│   ├── package.json
+│   ├── candidates.json
 │   └── uploads/
-├── frontend/
-│   ├── src/
-│   │   ├── App.tsx
-│   │   ├── App.css
-│   │   ├── index.css
-│   │   └── main.tsx
-│   └── package.json
-├── .gitignore
 └── README.md
 ```
 
-## Getting Started
+## 8. Running the Project Locally
 
-### Prerequisites
-
-* Node.js and npm
-* Git
-
-### 1. Clone the repository
-
-```bash
-git clone YOUR_GITHUB_REPOSITORY_URL
-cd recruitment-intelligence-platform
-```
-
-Replace `YOUR_GITHUB_REPOSITORY_URL` with your GitHub repository URL.
-
-### 2. Install backend dependencies
+### Start the backend
 
 ```bash
 cd backend
 npm install
+npm start
 ```
 
-### 3. Start the backend
+Backend URL: `http://localhost:5001`
+
+### Start the frontend
+
+Open a second terminal:
 
 ```bash
-node server.js
-```
-
-The backend runs at:
-
-`http://localhost:5001`
-
-### 4. Start the frontend
-
-Open a second terminal window and run:
-
-```bash
-cd /Users/samridhashri/Desktop/recruitment-intelligence-platform/frontend
+cd frontend
 npm install
 npm run dev
 ```
 
-Open the local URL printed by Vite in your terminal.
+Open the local URL printed by Vite in the terminal.
 
-## API Endpoints
+## 9. API Endpoints
 
-| Method | Endpoint              | Purpose                                        |
-| ------ | --------------------- | ---------------------------------------------- |
-| GET    | `/`                   | Backend health check                           |
-| POST   | `/api/analyze-resume` | Analyze a PDF resume against a job description |
-| GET    | `/api/candidates`     | Retrieve saved candidate analyses              |
-| DELETE | `/api/candidates/:id` | Delete a saved candidate                       |
+| Method | Endpoint              | Purpose                   |
+| ------ | --------------------- | ------------------------- |
+| GET    | `/`                   | Check backend status      |
+| POST   | `/api/analyze-resume` | Analyze a PDF resume      |
+| GET    | `/api/candidates`     | Retrieve saved candidates |
+| DELETE | `/api/candidates/:id` | Delete a saved candidate  |
 
-## Current Limitations
+The resume analysis endpoint expects a multipart form containing a PDF field named `resume` and a `jobDescription` field.
 
-* Supports text-based PDF resumes; scanned PDFs may require OCR.
-* Skill extraction uses a predefined skill dictionary.
-* Match scores are heuristic indicators, not validated hiring assessments.
-* Candidate data is stored locally in a JSON file.
-* Authentication and production-grade data protection are not yet implemented.
+## 10. Limitations
 
-## Future Enhancements
+* The current implementation uses predefined skills and rule-based scoring rather than a trained machine-learning model.
+* Scanned PDFs without an embedded text layer require OCR, which is not currently implemented.
+* Experience extraction depends on recognizable wording and may miss relevant experience.
+* Skill matching does not fully understand context, proficiency, or equivalent skills.
+* Candidate records are stored locally in JSON rather than in a production database.
+* The recommendation is intended as decision support, not as an automated hiring decision.
 
-* Add OCR and DOCX resume support.
-* Integrate semantic matching using NLP or embedding models.
-* Add recruiter authentication and role-based access control.
-* Introduce a production database.
-* Add explainable scoring and candidate comparison.
-* Deploy the application with secure configuration and privacy controls.
+## 11. Future Enhancements
 
-## Disclaimer
+* Integrate a database such as PostgreSQL or MongoDB.
+* Add OCR for scanned resumes.
+* Improve experience extraction and contextual skill matching.
+* Add recruiter authentication and role-based access.
+* Add explainable score breakdowns and downloadable reports.
+* Evaluate the screening algorithm on a representative, appropriately consented dataset.
 
-HireIQ is a recruitment-support prototype. Its scores and recommendations should not be used as the sole basis for hiring decisions. Recruiters should review candidates fairly and independently.
+## 12. Conclusion
 
----
-
-**Built as a final-year project exploring recruitment automation and full-stack web development.**
+HireIQ demonstrates a full-stack approach to resume screening by combining a React interface, an Express API, PDF text extraction, rule-based matching, scoring, and local candidate record management. It provides a foundation for further development into a more robust recruitment-support system.
